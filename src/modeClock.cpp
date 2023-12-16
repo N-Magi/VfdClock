@@ -1,25 +1,43 @@
 #include "modeClock.h"
 
-void ModeClock::exec(){
+void ModeClock::exec()
+{
 
+    procKeys();
+
+    TimeData times = _rtc->getTime();
+    uint8_t swState = _brd->getBtnStat();
+
+    ushort date[8] = {times.year / 10u, times.year % 10u, 10u, times.month / 10u, times.month % 10u, 10u, times.day / 10u, times.day % 10u};
+
+    ushort time1[8] = {times.hour / 10u, times.hour % 10u, 10u, times.min / 10u, times.min % 10u, 10u, times.sec / 10u, times.sec % 10u};
+    createData(time1, date);
+    _brd->setDiplsayData(md);
+    _brd->render();
 }
 
-void ModeClock::createData(ushort *data18, ushort *data21){
-  ushort num18[2], num21[2];
-  for(int idx = 7; idx >= 0; idx--){
-    
-    num18[0] = 7 - idx;
-    num18[1] = data18[idx];
-    num21[0] = 7 - idx;
-    num21[1] = data21[idx];
+void ModeClock::procKeys()
+{
 
-    md[idx] = MatrixData::generateMatrixData(num18,num21);
-  }
+    uint8_t btn = _brd->getBtnStat();
 
-  num18[0] = 0;
-  num18[1] = 11;
-  num21[0] = 0;
-  num21[1] = 11;
-  md[9] = MatrixData::generateMatrixData(num18,num21);
+    bool accept = bitRead(btn, 7);
+    bool back = bitRead(btn, 6);
 
+    if (accept)
+    {
+        *_modeStat = DIVERGENCE;
+        return;
+    }
+
+    if (back)
+    {
+        if (_net->isConnected())
+        {   
+            *_modeStat = NTPADJUSTMENT;
+            return;
+        }
+        *_modeStat = ADJUSTMENT;
+        return;
+    }
 }

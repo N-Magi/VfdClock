@@ -17,6 +17,8 @@ public:
     bool connect();
     bool connect(char *ssid, char *pass);
     TimeData getTime(char *url);
+    bool isConnected();
+
 };
 
 

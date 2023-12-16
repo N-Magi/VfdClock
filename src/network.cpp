@@ -1,19 +1,26 @@
 #include "Network.h"
 
 Network::Network(FlashConfig *config)
-{  
-    _config = config;
+{
+  _config = config;
+}
+
+bool Network::isConnected()
+{
+
+  return WiFi.isConnected() & (WiFi.getMode() != WIFI_AP);
 }
 
 bool Network::connect(char *ssid, char *pass)
 {
   // Connect Wifi
   WiFi.disconnect(false);
+  WiFi.mode(WIFI_STA);
   if (sizeof(ssid) > 0)
     WiFi.begin(ssid, pass);
-  //WiFi.begin();
-  Serial.println("Tries Connect WiFi");
-
+  // WiFi.begin();
+  Serial.print("Try Connect WiFi:");
+  Serial.println(ssid);
   uint16_t time = millis();
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -25,7 +32,7 @@ bool Network::connect(char *ssid, char *pass)
       break;
     }
   }
-  if(WiFi.status() == WL_CONNECTED)
+  if (WiFi.status() == WL_CONNECTED)
   {
     Serial.println("Connected!!");
     return true;
@@ -33,15 +40,16 @@ bool Network::connect(char *ssid, char *pass)
   return false;
 }
 
-TimeData Network::getTime(char *url){
+TimeData Network::getTime(char *url)
+{
   NTP.begin(url);
   NTP.waitSet();
 
-  t = time(NULL)+(3600*9);
+  t = time(NULL) + (3600 * 9);
   tms = localtime(&t);
-  
+
   TimeData timed;
-  timed.year = tms->tm_year  % 100;
+  timed.year = tms->tm_year % 100;
   timed.month = tms->tm_mon + 1;
   timed.day = tms->tm_mday;
   timed.hour = tms->tm_hour;
@@ -50,10 +58,11 @@ TimeData Network::getTime(char *url){
   return timed;
 }
 
-bool Network::connect(){
-    if(_config->ssid.configSize <= 0){
-        return false;
-    }
-    //return Connect(_config->ssid.config , _config->pass.config);
-    return Connect("747747", "7e3aba54aa");
+bool Network::connect()
+{
+  if (_config->ssid.configSize <= 0)
+  {
+    return false;
+  }
+  return connect(_config->ssid.config , _config->pass.config);
 }

@@ -13,6 +13,7 @@
 #define SRCLR 21
 #define RCK 20
 #define LED 6
+
 #define SW_ACCEPT 10
 #define SW_BACK 11
 #define SW_P 12

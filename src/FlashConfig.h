@@ -6,16 +6,16 @@
 
 #define FLASH_TARGET_OFFSET 0x1f0000
 
-class FlashConfig{
-    public:
-        void loadData();
-        void saveData();
+class FlashConfig
+{
+public:
+    void loadData();
+    void saveData();
 
-        Config ssid;
-        Config pass;
-    private:
-        uint writeData(uint8_t* data, Config config, uint startIdx);
+    Config ssid;
+    Config pass;
+    Config ntpAddr;
+
+private:
+    uint writeData(uint8_t *data, Config config, uint startIdx);
 };
-
-
-
